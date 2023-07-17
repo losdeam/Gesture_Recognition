@@ -1,0 +1,13 @@
+#  requirements
+# Usage: pip install -r requirements.txt
+
+# Base ----------------------------------------
+mediapipe
+opencv-python
+numpy
+PIL
+
+
+# View -------------------------------------
+PyQt5
+
