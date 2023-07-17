@@ -62,16 +62,13 @@ class Ui_main(QtWidgets.QMainWindow):
     def camera(self):
         self.Dialog.hide()
         self.f = Ui_video()
-        # self.hide()  # 隐藏此窗口
-        # self.s = Ui_video()  # 将第二个窗口换个名字
-        # self.s.show()  # 经第二个窗口显示出来
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
-        self.Dialog.setWindowTitle(_translate("Dialog", "欢迎使用康复机械手"))
+        self.Dialog.setWindowTitle(_translate("Dialog", "欢迎使用基于mediapipe的智能视频处理平台"))
         self.pushButton_2.setText(_translate("Dialog", "相机模式"))
         self.pushButton_3.setText(_translate("Dialog", "照片处理模式"))
-        self.label.setText(_translate("Dialog", "欢迎使用智能家居控制系统"))#
+        self.label.setText(_translate("Dialog", "基于mediapipe的智能视频处理平台"))#
 #视频界面
 class Ui_video(QWidget):
     def __init__(self):
