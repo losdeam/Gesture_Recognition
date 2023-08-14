@@ -1,11 +1,11 @@
 import cv2
 import mediapipe as mp
 import math
-import  glass 
-import  painting_style
 import json
 import os
 
+import  function.glass as glass
+import  function.painting_style as painting_style
 #彩色转灰色
 def BGR2GRAY(frame):
     return cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -85,7 +85,6 @@ def specual_effects(frame,gesture):
         elif gesture == a[0]:
             frame = b[2](frame)
     return frame
-
 #自定义手势特效区
 def specual_effects_zdy(frame,gesture):
     a = ["1","2","3","4","5"]
@@ -98,6 +97,7 @@ def specual_effects_zdy(frame,gesture):
         elif gesture == a[0]:
             frame = b[2](frame)
     return frame
+
 
 #保存数据点至hand_n.json,将第n个动作替换
 def save(data,n):
@@ -150,8 +150,8 @@ def sampling(n):
                     hand_local.append((x,y))
                 if hand_local:
                     t.append((hand_local))
-
                     nums+=1
+
         # cv2.startWindowThread()  # 加在这个位置
         cv2.imshow('loading,just a moment', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -165,58 +165,6 @@ def sampling(n):
             break
     cap.release()
     k_means(6)
-    # cv2.destroyallwindows()
-
-def sampling_outside(n):
-    t=[]
-    nums = 0
-    min_x,min_y = 999 ,999
-    max_x,max_y = 0,0
-    mp_drawing = mp.solutions.drawing_utils
-    mp_hands = mp.solutions.hands
-    hands = mp_hands.Hands(
-            static_image_mode=False,
-            max_num_hands=1,
-            min_detection_confidence=0.75,
-            min_tracking_confidence=0.75)
-    cap = cv2.VideoCapture(0)
-    while True:
-        ret,frame = cap.read()
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame= cv2.flip(frame,1)
-        results = hands.process(frame)
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        if results.multi_hand_landmarks: #如果识别到手
-            for hand_landmarks in results.multi_hand_landmarks: #遍历识别到的所有手
-                mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-                hand_local = []
-                #21个姿态点，转化为适配输出格式的形式
-                for i in range(21):
-                    x = hand_landmarks.landmark[i].x*frame.shape[1]
-                    y = hand_landmarks.landmark[i].y*frame.shape[0]
-                    min_x = min(x,min_x)
-                    min_y = min(y,min_y)
-                    max_x = max(x,max_x)
-                    max_y = max(y,max_y)
-                    hand_local.append((x,y))
-                if hand_local:
-                    t.append((hand_local))
-
-                    nums+=1
-        # cv2.startWindowThread()  # 加在这个位置
-        cv2.imshow('loading,just a moment', frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-        if  nums == 150:
-            min_x, min_y,max_x, max_y = int( min_x),int(min_y),int(max_x),int(max_y)
-            save(t,n)
-            frame = frame[min_y-10:max_y+10,min_x-10:max_x+10]
-            frame =cv2.resize(frame, (200, 300))
-            cv2.imwrite(f'data/gesture/gesture{n}.jpg', frame)
-            break
-    cap.release()
-    detect.k_means(6)
-    cv2.waitKey(1)
     # cv2.destroyallwindows()
 
 #距离检测（欧式距离）
@@ -364,44 +312,6 @@ def h_gesture(angle_list):
     return gesture_str
 
 #识别程序主体
-def detect():
-
-    mp_drawing = mp.solutions.drawing_utils
-    mp_hands = mp.solutions.hands
-    hands = mp_hands.Hands(
-            static_image_mode=False,
-            max_num_hands=1,
-            min_detection_confidence=0.75,
-            min_tracking_confidence=0.75)
-    cap = cv2.VideoCapture(0)
-    while True:
-        ret,frame = cap.read()
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame= cv2.flip(frame,1)
-        results = hands.process(frame)
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-
-        if results.multi_hand_landmarks: #如果识别到手
-            for hand_landmarks in results.multi_hand_landmarks: #遍历识别到的所有手
-                mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-                hand_local = []
-                #21个姿态点，转化为适配输出格式的形式
-                for i in range(21):
-                    x = hand_landmarks.landmark[i].x*frame.shape[1]
-                    y = hand_landmarks.landmark[i].y*frame.shape[0]
-                    hand_local.append((x,y))
-                if hand_local:
-                    angle_list = hand_angle(hand_local) #手指角度获取
-                    gesture_str = h_gesture(angle_list) #手势判断
-                    cv2.putText(frame,gesture_str,(0,100),0,1.3,(255,255,255),3) #输出文字
-                    frame = specual_effects(frame,gesture_str)
-        cv2.imshow('camera', frame)
-        if cv2.waitKey(1) & 0xFF == 27:
-            break
-    cap.release()
-    cv2.destroyallwindows()
-
-#识别程序主体
 def detect_zdy():
 
     mp_drawing = mp.solutions.drawing_utils
@@ -443,8 +353,5 @@ def detect_zdy():
 
 if __name__ == '__main__':
     sampling(1)
-    # model = load(0)
-    # for i in model:
-    #     print(i)
-    # detect_zdy()
+
 
